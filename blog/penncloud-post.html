@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building PennCloud · Sivangi Chatterjee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg-alt: #F3F1EE;
+  --text: #1A1A1A;
+  --text-muted: #6B6B6B;
+  --accent: #8B7355;
+  --accent-light: #C4A882;
+  --accent-hover: #6E5A42;
+  --border: #E0DCD6;
+  --card-bg: #FFFFFF;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Libre Franklin', 'Helvetica Neue', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent-light); color: var(--text); }
+
+.post-nav {
+  padding: 0 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.post-nav-inner {
+  max-width: 860px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center; height: 60px;
+}
+.post-nav a {
+  font-family: var(--sans); font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.06em; color: var(--accent); text-decoration: none;
+  transition: color 0.2s;
+}
+.post-nav a:hover { color: var(--accent-hover); }
+
+.post-article {
+  max-width: 860px; margin: 0 auto;
+  padding: 60px 2rem 120px;
+}
+
+.post-title {
+  font-family: var(--serif); font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 600; color: var(--text); line-height: 1.15;
+  margin-bottom: 0.8rem;
+}
+
+.post-subtitle {
+  font-family: var(--serif); font-size: 1.15rem; font-style: italic;
+  color: var(--text-muted); line-height: 1.5; margin-bottom: 1.2rem;
+}
+
+.post-meta {
+  font-size: 0.78rem; color: var(--text-muted);
+  letter-spacing: 0.04em; margin-bottom: 1.4rem;
+}
+
+.post-accent-rule {
+  width: 40px; height: 2px; background: var(--accent);
+  margin-bottom: 2.8rem;
+}
+
+.post-body h2 {
+  font-family: var(--serif); font-size: 1.5rem; font-weight: 600;
+  color: var(--text); margin-top: 2.8rem; margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+.post-body p {
+  font-size: 0.95rem; color: var(--text); line-height: 1.85;
+  margin-bottom: 1.4rem;
+}
+
+.post-body a {
+  color: var(--accent); text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.post-body a:hover { color: var(--accent-hover); }
+
+.callout {
+  border-left: 2px solid var(--accent);
+  padding: 0.8rem 1.2rem;
+  background: var(--bg-alt);
+  margin: 1.8rem 0;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* --- diagram block --- */
+.diagram-block {
+  margin: 2.4rem 0;
+  padding: 1.8rem 0.5rem 1.4rem;
+  background: var(--bg-alt);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.diagram-caption {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.8rem;
+}
+
+/* SVG-internal classes (scoped enough to coexist with body styles) */
+.diagram-block .node-box        { fill: #FFFFFF; stroke: var(--border); stroke-width: 1; }
+.diagram-block .node-box-accent { fill: #FBF9F6; stroke: var(--accent-light); stroke-width: 1.5; }
+.diagram-block .node-box-backend{ fill: #FFFFFF; stroke: #D4C4B0; stroke-width: 1; }
+.diagram-block .node-box-inner  { fill: #F8F6F2; stroke: #E0DCD6; stroke-width: 0.8; }
+.diagram-block .node-box-disk   { fill: #FBF9F6; stroke: #C4A882; stroke-width: 0.8; }
+
+.diagram-block .node-label    { font-family: 'Libre Franklin'; font-size: 11px; font-weight: 500; fill: #1A1A1A; text-anchor: middle; dominant-baseline: central; }
+.diagram-block .node-sublabel { font-family: 'Libre Franklin'; font-size: 9px;  font-weight: 300; fill: #6B6B6B; text-anchor: middle; dominant-baseline: central; }
+.diagram-block .edge-label    { font-family: 'Libre Franklin'; font-size: 9px;  font-weight: 400; fill: #8B7355; }
+.diagram-block .edge-label-bold { font-family: 'Libre Franklin'; font-size: 9.5px; font-weight: 500; fill: #8B7355; }
+.diagram-block .edge-label-muted { font-family: 'Libre Franklin'; font-size: 9px; font-weight: 400; fill: #9EB090; }
+.diagram-block .section-label { font-family: 'Libre Franklin'; font-size: 9px;  font-weight: 600; fill: #9E8E7A; letter-spacing: 0.12em; text-transform: uppercase; }
+
+.diagram-block .heartbeat-line { fill: none; stroke: #C4A882; stroke-width: 1; stroke-dasharray: 4 3; animation: dash 2s linear infinite; }
+.diagram-block .health-line    { fill: none; stroke: #A8B89C; stroke-width: 1; stroke-dasharray: 3 3; animation: dash 1.5s linear infinite; }
+.diagram-block .data-line      { fill: none; stroke: #C4A882; stroke-width: 1.2; }
+.diagram-block .repl-line      { fill: none; stroke: #C4B4A0; stroke-width: 1; stroke-dasharray: 5 3; animation: dash 3s linear infinite; }
+
+@keyframes dash { to { stroke-dashoffset: -20; } }
+
+.diagram-block .pulse-ring { fill: none; stroke: #C4A882; stroke-width: 1; opacity: 0; animation: pulse 3s ease-out infinite; }
+.diagram-block .pulse-ring-2 { animation-delay: 1s; }
+@keyframes pulse { 0% { r: 30px; opacity: 0.5; } 100% { r: 48px; opacity: 0; } }
+
+.diagram-block .wal-tick   { fill: #C4A882; opacity: 0; animation: tick 2.4s ease-in-out infinite; }
+.diagram-block .wal-tick-2 { animation-delay: 0.8s; }
+.diagram-block .wal-tick-3 { animation-delay: 1.6s; }
+@keyframes tick {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  20%  { opacity: 1; }
+  60%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(4px); }
+}
+
+.diagram-block svg { width: 100%; height: auto; display: block; }
+
+.legend { display: flex; gap: 1.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; color: var(--text-muted); font-family: var(--sans); font-weight: 400; letter-spacing: 0.02em; }
+.legend-swatch { width: 26px; height: 0; border-top: 1.4px solid #C4A882; }
+.legend-swatch.dashed-amber { border-top: 1px dashed #C4A882; }
+.legend-swatch.dashed-green { border-top: 1px dashed #A8B89C; }
+.legend-swatch.dashed-brown { border-top: 1px dashed #C4B4A0; }
+
+footer {
+  text-align: center; padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  .post-nav { padding: 0 1.5rem; }
+  .post-article { padding: 40px 1.5rem 80px; }
+  .diagram-block { padding: 1rem 0.2rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="post-nav">
+  <div class="post-nav-inner">
+    <a href="../blog.html">&#8592; Blog</a>
+    <a href="../index.html">Home</a>
+  </div>
+</nav>
+
+<article class="post-article">
+
+  <h1 class="post-title">Building PennCloud: A Distributed Cloud Platform from Scratch</h1>
+  <p class="post-subtitle">A semester spent learning that the easy parts are not easy</p>
+  <p class="post-meta">Published: May 2026 &nbsp;&middot;&nbsp; Sivangi Chatterjee</p>
+  <div class="post-accent-rule"></div>
+
+  <div class="post-body">
+
+    <p>
+      There is something humbling about trying to build a simplified version of Gmail and Google Drive and realizing just how much engineering goes into making something that "just works." That was the core lesson from PennCloud, a semester-long project for CIS 5050 at Penn where my team built a distributed cloud platform entirely from scratch in C++. No external databases, no cloud infrastructure, no third-party key-value stores. Just raw sockets, threads, and a lot of debugging at 2am.
+    </p>
+    <p>
+      This is the story of how we built it, what broke, and what we learned.
+    </p>
+
+    <h2>What we actually built</h2>
+    <p>
+      PennCloud is a cloud platform with two core services: a webmail service similar to Gmail and a file storage service similar to Google Drive. Users can sign up, log in, send and receive emails (including to real external addresses like Penn and Gmail accounts), upload files of any type up to 800MB, organize them into folders, and do all the standard operations you would expect: rename, move, delete.
+    </p>
+    <p>
+      Behind the scenes, five backend servers store all the data in a distributed key-value store. Five frontend servers handle HTTP and SMTP traffic. A load balancer sits in front of the frontends. A master coordinator manages which backend server is responsible for what. And an admin console lets you kill and restart individual servers to test fault tolerance.
+    </p>
+    <p>
+      The entire thing is written in C++, speaks raw HTTP/1.1 and SMTP, and runs on Linux. No frameworks, no shortcuts.
+    </p>
+
+    <!-- ===================== DIAGRAM ===================== -->
+    <div class="diagram-block">
+      <svg viewBox="0 0 980 820" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PennCloud system architecture">
+        <defs>
+          <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#C4A882"/>
+          </marker>
+          <marker id="arrowhead-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#A8B89C"/>
+          </marker>
+          <filter id="soft-shadow">
+            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#C4A882" flood-opacity="0.12"/>
+          </filter>
+        </defs>
+
+        <!-- tier labels -->
+        <text class="section-label" x="22" y="105" transform="rotate(-90,22,105)">client</text>
+        <text class="section-label" x="22" y="255" transform="rotate(-90,22,255)">load balancer</text>
+        <text class="section-label" x="22" y="395" transform="rotate(-90,22,395)">frontend</text>
+        <text class="section-label" x="22" y="545" transform="rotate(-90,22,545)">master</text>
+        <text class="section-label" x="22" y="705" transform="rotate(-90,22,705)">backend</text>
+
+        <line x1="50" y1="175"  x2="930" y2="175"  stroke="#E0DCD6" stroke-width="0.5" stroke-dasharray="2 4"/>
+        <line x1="50" y1="325"  x2="930" y2="325"  stroke="#E0DCD6" stroke-width="0.5" stroke-dasharray="2 4"/>
+        <line x1="50" y1="475"  x2="930" y2="475"  stroke="#E0DCD6" stroke-width="0.5" stroke-dasharray="2 4"/>
+        <line x1="50" y1="605"  x2="930" y2="605"  stroke="#E0DCD6" stroke-width="0.5" stroke-dasharray="2 4"/>
+
+        <!-- Alice -->
+        <g>
+          <circle class="pulse-ring" cx="490" cy="78" r="30"/>
+          <circle class="pulse-ring pulse-ring-2" cx="490" cy="78" r="30"/>
+          <circle cx="490" cy="64" r="10" fill="#FBF9F6" stroke="#C4A882" stroke-width="1.4"/>
+          <path d="M468,108 C468,90 478,80 490,80 C502,80 512,90 512,108 Z"
+                fill="#FBF9F6" stroke="#C4A882" stroke-width="1.4" stroke-linejoin="round"/>
+          <text class="node-label" x="490" y="128">Alice</text>
+          <text class="node-sublabel" x="490" y="142">browser client</text>
+        </g>
+
+        <!-- Load Balancer -->
+        <g>
+          <rect x="395" y="215" width="190" height="60" rx="5" class="node-box-accent" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="490" y="237">Load Balancer</text>
+          <text class="node-sublabel" x="490" y="256">round robin · HTTP 302</text>
+        </g>
+        <g>
+          <line x1="490" y1="155" x2="490" y2="213" class="data-line" marker-end="url(#arrowhead)"/>
+          <text class="edge-label" x="498" y="180">GET /mail/inbox</text>
+          <text class="edge-label" x="498" y="194" fill="#9E8E7A">↑ 302 redirect</text>
+        </g>
+
+        <!-- Frontends -->
+        <g>
+          <rect x="78"  y="343" width="130" height="60" rx="5" class="node-box-accent" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="143" y="364">Frontend #1</text>
+          <text class="node-sublabel" x="143" y="382">HTTP · SMTP</text>
+          <circle cx="192" cy="349" r="4" fill="#A8B89C"/>
+        </g>
+        <g>
+          <rect x="248" y="343" width="130" height="60" rx="5" class="node-box" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="313" y="364">Frontend #2</text>
+          <text class="node-sublabel" x="313" y="382">HTTP · SMTP</text>
+          <circle cx="362" cy="349" r="4" fill="#A8B89C"/>
+        </g>
+        <g>
+          <rect x="418" y="343" width="130" height="60" rx="5" class="node-box" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="483" y="364">Frontend #3</text>
+          <text class="node-sublabel" x="483" y="382">HTTP · SMTP</text>
+          <circle cx="532" cy="349" r="4" fill="#A8B89C"/>
+        </g>
+        <g>
+          <rect x="588" y="343" width="130" height="60" rx="5" class="node-box" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="653" y="364">Frontend #4</text>
+          <text class="node-sublabel" x="653" y="382">HTTP · SMTP</text>
+          <circle cx="702" cy="349" r="4" fill="#A8B89C"/>
+        </g>
+        <g>
+          <rect x="758" y="343" width="130" height="60" rx="5" class="node-box" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="823" y="364">Frontend #5</text>
+          <text class="node-sublabel" x="823" y="382">HTTP · SMTP</text>
+          <circle cx="872" cy="349" r="4" fill="#A8B89C"/>
+        </g>
+
+        <!-- Data bus from LB to FE -->
+        <g>
+          <line x1="490" y1="275" x2="490" y2="305" class="data-line"/>
+          <line x1="143" y1="305" x2="823" y2="305" class="data-line"/>
+          <line x1="143" y1="305" x2="143" y2="341" class="data-line" marker-end="url(#arrowhead)"/>
+          <line x1="313" y1="305" x2="313" y2="341" class="data-line" marker-end="url(#arrowhead)"/>
+          <line x1="483" y1="305" x2="483" y2="341" class="data-line" marker-end="url(#arrowhead)"/>
+          <line x1="653" y1="305" x2="653" y2="341" class="data-line" marker-end="url(#arrowhead)"/>
+          <line x1="823" y1="305" x2="823" y2="341" class="data-line" marker-end="url(#arrowhead)"/>
+        </g>
+
+        <!-- Health lines (outer margins) -->
+        <g>
+          <polyline points="395,245 60,245 60,373 78,373" class="health-line" marker-end="url(#arrowhead-green)" stroke-linejoin="round"/>
+          <polyline points="585,245 920,245 920,373 888,373" class="health-line" marker-end="url(#arrowhead-green)" stroke-linejoin="round"/>
+          <text class="edge-label-muted" x="73" y="265">/health</text>
+          <text class="edge-label-muted" x="73" y="278">every 5s</text>
+          <text class="edge-label-muted" x="850" y="265">/health</text>
+          <text class="edge-label-muted" x="850" y="278">every 5s</text>
+        </g>
+
+        <!-- Master -->
+        <g>
+          <rect x="395" y="510" width="190" height="66" rx="5" class="node-box-accent" filter="url(#soft-shadow)"/>
+          <text class="node-label" x="490" y="530">Master</text>
+          <text class="node-sublabel" x="490" y="547">primary map · elections</text>
+          <text class="node-sublabel" x="490" y="561">failure detection</text>
+        </g>
+        <g>
+          <line x1="483" y1="403" x2="483" y2="508" class="data-line" stroke="#C4B4A0" marker-end="url(#arrowhead)"/>
+          <text class="edge-label" x="492" y="440">LOOKUP</text>
+          <text class="edge-label" x="492" y="453" fill="#9E8E7A">↑ Backend #1</text>
+        </g>
+
+        <!-- Backend cluster -->
+        <rect x="58" y="625" width="864" height="180" rx="8" fill="none" stroke="#E0DCD6" stroke-width="0.8" stroke-dasharray="3 4"/>
+
+        <!-- Backend 1 -->
+        <g>
+          <rect x="74" y="640" width="246" height="146" rx="5" class="node-box-backend" filter="url(#soft-shadow)"/>
+          <rect x="90" y="654" width="214" height="40" rx="3" class="node-box-inner"/>
+          <text class="node-label" x="197" y="671">Memtables</text>
+          <text class="node-sublabel" x="197" y="685">in-memory KV store</text>
+          <rect x="90" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="139" y="719">WAL</text>
+          <text class="node-sublabel" x="139" y="733">write-ahead log</text>
+          <rect class="wal-tick" x="178" y="708" width="3" height="3" rx="0.5"/>
+          <rect class="wal-tick wal-tick-2" x="178" y="718" width="3" height="3" rx="0.5"/>
+          <rect class="wal-tick wal-tick-3" x="178" y="728" width="3" height="3" rx="0.5"/>
+          <rect x="206" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="255" y="719">Checkpoint</text>
+          <text class="node-sublabel" x="255" y="733">60s snapshot</text>
+          <text class="node-sublabel" x="197" y="768" style="font-weight:500;fill:#1A1A1A">Backend #1 · 6 tablets</text>
+        </g>
+
+        <!-- Backend 2 -->
+        <g>
+          <rect x="367" y="640" width="246" height="146" rx="5" class="node-box-backend" filter="url(#soft-shadow)"/>
+          <rect x="383" y="654" width="214" height="40" rx="3" class="node-box-inner"/>
+          <text class="node-label" x="490" y="671">Memtables</text>
+          <text class="node-sublabel" x="490" y="685">in-memory KV store</text>
+          <rect x="383" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="432" y="719">WAL</text>
+          <text class="node-sublabel" x="432" y="733">write-ahead log</text>
+          <rect class="wal-tick" x="471" y="708" width="3" height="3" rx="0.5" style="animation-delay:0.4s"/>
+          <rect class="wal-tick" x="471" y="718" width="3" height="3" rx="0.5" style="animation-delay:1.2s"/>
+          <rect class="wal-tick" x="471" y="728" width="3" height="3" rx="0.5" style="animation-delay:2s"/>
+          <rect x="499" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="548" y="719">Checkpoint</text>
+          <text class="node-sublabel" x="548" y="733">60s snapshot</text>
+          <text class="node-sublabel" x="490" y="768" style="font-weight:500;fill:#1A1A1A">Backend #2 · 6 tablets</text>
+        </g>
+
+        <!-- Backend 5 -->
+        <g>
+          <rect x="660" y="640" width="246" height="146" rx="5" class="node-box-backend" filter="url(#soft-shadow)"/>
+          <rect x="676" y="654" width="214" height="40" rx="3" class="node-box-inner"/>
+          <text class="node-label" x="783" y="671">Memtables</text>
+          <text class="node-sublabel" x="783" y="685">in-memory KV store</text>
+          <rect x="676" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="725" y="719">WAL</text>
+          <text class="node-sublabel" x="725" y="733">write-ahead log</text>
+          <rect class="wal-tick" x="764" y="708" width="3" height="3" rx="0.5" style="animation-delay:0.8s"/>
+          <rect class="wal-tick" x="764" y="718" width="3" height="3" rx="0.5" style="animation-delay:1.6s"/>
+          <rect class="wal-tick" x="764" y="728" width="3" height="3" rx="0.5" style="animation-delay:2.4s"/>
+          <rect x="792" y="704" width="98" height="44" rx="3" class="node-box-disk"/>
+          <text class="node-label" x="841" y="719">Checkpoint</text>
+          <text class="node-sublabel" x="841" y="733">60s snapshot</text>
+          <text class="node-sublabel" x="783" y="768" style="font-weight:500;fill:#1A1A1A">Backend #5 · 6 tablets</text>
+        </g>
+
+        <text x="344" y="714" font-size="14" fill="#C4A882" text-anchor="middle">···</text>
+        <text x="637" y="714" font-size="14" fill="#C4A882" text-anchor="middle">···</text>
+
+        <!-- Heartbeat -->
+        <g>
+          <text class="edge-label-bold" x="490" y="595" text-anchor="middle">HEARTBEAT · every 250ms</text>
+          <line x1="430" y1="576" x2="197" y2="638" class="heartbeat-line" marker-end="url(#arrowhead)"/>
+          <line x1="490" y1="576" x2="490" y2="638" class="heartbeat-line" marker-end="url(#arrowhead)"/>
+          <line x1="550" y1="576" x2="783" y2="638" class="heartbeat-line" marker-end="url(#arrowhead)"/>
+        </g>
+
+        <!-- Replication -->
+        <g>
+          <line x1="320" y1="713" x2="367" y2="713" class="repl-line" marker-end="url(#arrowhead)"/>
+          <text class="edge-label" x="328" y="707">REPL_PUT</text>
+          <line x1="613" y1="713" x2="660" y2="713" class="repl-line" marker-end="url(#arrowhead)"/>
+          <text class="edge-label" x="621" y="707">REPL_PUT</text>
+        </g>
+
+        <text class="section-label" x="490" y="815" text-anchor="middle">
+          tablet ranges: a-b · c-d · e-f · g-h · i-k · l-n · o-p · q-s · t-v · w-z &nbsp;·&nbsp; 3 replicas per tablet
+        </text>
+      </svg>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-swatch"></span><span>data / request</span></div>
+        <div class="legend-item"><span class="legend-swatch dashed-amber"></span><span>heartbeat · 250ms</span></div>
+        <div class="legend-item"><span class="legend-swatch dashed-green"></span><span>health check · 5s</span></div>
+        <div class="legend-item"><span class="legend-swatch dashed-brown"></span><span>replication</span></div>
+      </div>
+      <p class="diagram-caption">PennCloud system architecture, end to end.</p>
+    </div>
+
+    <h2>The foundation: a distributed key-value store</h2>
+    <p>
+      Everything in PennCloud, user accounts, emails, files, session data, lives in a distributed key-value store that we built ourselves. Think of it as a giant sparse table: rows identified by a string key, columns identified by another string key, and binary values that can hold anything from a password hash to the raw bytes of a PDF.
+    </p>
+    <p>
+      The store supports four operations: PUT, GET, CPUT (conditional put, which only writes if the current value matches an expected value), and DELETE. CPUT is the interesting one. It is how you handle concurrent updates safely without a traditional transaction system. When a user sends an email, for example, we need to atomically add it to their inbox list. We read the current list, append the new entry, and then CPUT back: "write this new list only if the list has not changed since I read it." If someone else updated it in the meantime, we retry. It is a lightweight form of optimistic concurrency control.
+    </p>
+    <p>
+      To distribute the data across servers, we partition it into 10 tablets based on the first character of the row key. Row keys starting with a or b go to tablet 0, c or d go to tablet 1, and so on through w-z. Each tablet is stored on exactly 3 of the 5 backend servers, so there is always redundancy.
+    </p>
+
+    <h2>Replication: making sure three servers agree</h2>
+    <p>
+      Having three copies of every tablet is only useful if they actually stay in sync. For this we used primary-based replication. For each tablet, one server is designated the primary. All writes go through the primary: it applies the change locally and then pushes it to the two backup replicas. If a backup is unreachable, the primary skips it and moves on. The backup will catch up later when it comes back online.
+    </p>
+    <p>
+      If a client sends a write to a non-primary server, that server does not reject it. It forwards the request to the primary on the client's behalf. This keeps the API simple: clients do not need to know which server is primary, they just need to know which servers hold a given tablet.
+    </p>
+    <p>
+      The master coordinator is responsible for tracking which server is currently primary for each tablet and broadcasting that information to all backends every 250 milliseconds via heartbeats. This means if a primary goes down and a new one is elected, every server in the cluster knows about it within one heartbeat cycle, roughly a quarter of a second.
+    </p>
+
+    <h2>The master: a coordinator that stays off the data path</h2>
+    <p>
+      The master is intentionally simple. It does not store any data. It does not handle any reads or writes. Its only job is to know who is alive, who is primary for each tablet, and to tell everyone else.
+    </p>
+    <p>
+      Backend servers send a heartbeat to the master every 250 milliseconds. The master replies with the current primary map: a compact list of tablet-to-primary assignments. If a server misses 4 consecutive heartbeats (1 second of silence), the master marks it as dead and immediately promotes the next alive replica as primary for any tablets that server owned.
+    </p>
+    <p>
+      Frontend servers cache the primary address for each tablet locally. On failure, they retry once, and if that fails too, they do a fresh LOOKUP to the master to get the updated address. This design keeps the master off the critical path for normal operations: the master is only contacted when something changes or a cache needs refreshing.
+    </p>
+
+    <h2>The hard part: crash recovery</h2>
+    <p>
+      This is where things get genuinely interesting, and honestly where I spent most of my time.
+    </p>
+    <p>
+      The problem is straightforward to state: if a backend server crashes mid-operation and loses all its in-memory state, how do you get it back to exactly where it was? You cannot just replay every write since the beginning of time. And you cannot afford to write everything to disk on every operation because that would be unbearably slow.
+    </p>
+    <p>
+      The answer is a combination of write-ahead logging and periodic checkpointing.
+    </p>
+
+    <div class="callout">
+      Write to disk before you write to memory. This one rule is what makes crash recovery safe.
+    </div>
+
+    <p>
+      Write-ahead logging means that every write (PUT, CPUT, DELETE) is appended to a log file on disk and fsynced to physical storage before the in-memory data is updated. The fsync is the critical part. Without it, the OS might buffer the write in RAM and the file on disk could still be empty when the server crashes. With fsync, you have a guarantee: if the server acknowledged a write to a client, that write is on disk.
+    </p>
+    <p>
+      The ordering matters too. Write to disk first, then update memory. If you do it the other way around and crash between the two steps, you have a write that exists in memory but not on disk. When you restart, that write is silently lost. With WAL, the worst case is replaying a write that already happened, which is safe because writes are idempotent in our case.
+    </p>
+    <p>
+      Checkpointing solves the problem of unbounded log growth. Every 60 seconds, a background thread serializes the entire in-memory tablet data to a binary snapshot file on disk. Once the checkpoint is written, the corresponding log file is no longer needed and a fresh one is started. On recovery, instead of replaying the entire history from day one, you load the latest snapshot (which captures everything up to that point) and then replay only the log entries that came after it.
+    </p>
+    <p>
+      One subtle issue: writing a large checkpoint file is not atomic. If the server crashes halfway through writing it, you end up with a corrupted checkpoint. The fix is simple: write to a temporary file first, then atomically rename it to the final path. On POSIX systems, rename is guaranteed to be atomic. The final path always contains either the old complete checkpoint or the new complete one, never a partial write.
+    </p>
+    <p>
+      During checkpointing, we also pause all writes to the tablet using a read-write lock. Normal concurrent reads and writes take a read lock and can proceed simultaneously. The checkpoint thread takes a write lock, which blocks until all ongoing writes finish and then freezes new ones until the snapshot is done. This guarantees the checkpoint captures a consistent state rather than a mixture of before and after some concurrent write.
+    </p>
+
+    <h2>Remote recovery: catching up after a crash</h2>
+    <p>
+      Local recovery (load checkpoint, replay log) gets you back to where you were when you crashed. But if the server was down for a while, other servers kept accepting writes. You are now behind.
+    </p>
+    <p>
+      After local recovery, the server contacts the current primary for each of its tablets and says: "my sequence number is N, what have I missed?" The primary checks its own WAL and sends back all entries with a sequence number greater than N. The recovering server applies them to memory and appends them to its own log, and it is back in sync.
+    </p>
+    <p>
+      There is a complication though. If the server was down long enough that the primary took a new checkpoint and deleted the old log, the primary's current log does not go back far enough to cover what the recovering server missed. We detect this case: the primary returns zero entries but its sequence number is higher than ours. In that situation, the recovering server requests the primary's full latest checkpoint plus current log, writes them to its own disk, and re-runs local recovery from those files. This two-path design avoids unnecessary full transfers in the common case while still handling the edge case correctly.
+    </p>
+
+    <h2>The frontend: more than just a web server</h2>
+    <p>
+      The frontend servers are not just HTTP handlers. Each one also runs an SMTP server to accept incoming emails from external clients like Thunderbird. A request comes in, poll() detects it, and the server spawns a worker thread to handle it.
+    </p>
+    <p>
+      One interesting optimization is the KV client connection pool. Every time a frontend needs to talk to a backend, it needs a TCP connection. Opening a new connection for every operation is expensive. So the KV client maintains a pool of up to 32 idle TCP connections to backend servers, reusing them across requests. This made a noticeable difference in response times under load.
+    </p>
+    <p>
+      File storage uses a schema worth describing. Files are stored under a generated ID (a combination of timestamp, process ID, and a sequence number for uniqueness). The actual file bytes live at a "content:file_id" column. A separate "path:absolute_path" column maps the human-readable path to the file ID. Renaming or moving a file is therefore just updating the path column to point to the same file ID. No copying of actual data. A 500MB file rename takes the same time as a 1KB file rename. We were able to upload files up to 800MB and confirmed 100MB uploads in about 7 seconds.
+    </p>
+
+    <h2>What broke and what we learned from it</h2>
+    <p>
+      Two problems stand out from this project. Both of them took real time to figure out, and neither showed up in the lectures. They were the kind of bugs you only catch when you actually run the system and watch it behave badly.
+    </p>
+
+    <p>
+      <strong>The first was a subtle recovery bug.</strong> Local recovery worked. Remote recovery worked when servers were only down for a few seconds. The problem showed up when we started simulating longer outages.
+    </p>
+    <p>
+      The way our recovery protocol worked: when a server came back online, it asked the current primary "my last sequence number is N, send me everything after that." The primary read its WAL, pulled out the matching entries, and shipped them over. Simple enough.
+    </p>
+    <p>
+      But here is the edge case we missed initially. If the recovering server had been down for more than 60 seconds, the primary had taken at least one checkpoint in the meantime. And after taking a checkpoint, the primary rotates its WAL: the old log gets deleted, a fresh one is started. So now the primary's current WAL no longer contains the entries the recovering server is asking for. The primary truthfully responds with zero matching entries. The recovering server thinks it is up to date. It is not.
+    </p>
+    <p>
+      The fix was to detect this case explicitly. If the primary returns zero entries but its own sequence number is higher than the recovering server's, that mismatch is the signal that we have fallen too far behind to use incremental sync. The recovering server then switches strategies: it fetches the primary's entire latest checkpoint plus current WAL, writes both files to its own disk, and re-runs local recovery from scratch. It is essentially saying "forget what I had, just give me your current state."
+    </p>
+    <p>
+      What made this hard to find is that the bug only manifests at specific timing intersections. You need the server to be down for at least one full checkpoint cycle, and then you need writes to be flowing while it is down. In normal manual testing, you never see it. You only catch it when you intentionally simulate long outages and then start asking "wait, why does this server still have stale data?"
+    </p>
+
+    <p>
+      <strong>The second hard problem was getting all the servers to actually talk to each other reliably.</strong> When everything is local on one machine, you can be a little sloppy with sockets and it usually works. When you have five backends, five frontends, a master, and a load balancer all making cross-process requests, every shortcut comes back to bite you.
+    </p>
+    <p>
+      The first thing we got wrong was message framing. Initially we used newlines to delimit messages, which works fine until you start sending binary file content that happens to contain a newline byte. The receiver thinks the message ended early, parses garbage, and the connection breaks. We had a real incident where uploading a particular PDF would corrupt the parsing state of the backend it was sent to. The fix was to switch the entire protocol to length-prefixed framing: every message starts with a header specifying exactly how many bytes follow. The receiver reads precisely that many bytes and does not scan for any terminator. This made the protocol completely binary-safe and removed a whole category of bugs.
+    </p>
+    <p>
+      The second issue was connection management. Opening a fresh TCP connection for every operation between a frontend and a backend turned out to be brutally slow. Each three-way handshake takes a few milliseconds, and a single page load can trigger dozens of KV operations. The latency added up to something a user could perceive. The fix was a connection pool. Each frontend now maintains up to 32 idle TCP connections to backends and reuses them across requests. The improvement in response time was immediately visible the moment we deployed it.
+    </p>
+    <p>
+      The third issue was about how frontends discovered the current primary for a tablet. Asking the master on every single request would have made the master a bottleneck and defeated the whole point of having a separate coordinator. So we cache the primary address locally on each frontend. The frontend only contacts the master if its cached primary fails twice in a row, on the assumption that the primary has changed. This keeps the master almost entirely off the critical path for normal traffic. It only gets involved during failover, which is exactly when you want it involved.
+    </p>
+
+    <h2>What we would do differently</h2>
+    <p>
+      A few things stand out in hindsight.
+    </p>
+    <p>
+      Passwords are stored in plaintext in the KV store. We knew this during development and it was a deliberate shortcut given the time constraints, but hashing them would be the obvious first fix.
+    </p>
+    <p>
+      The replication protocol we used (primary pushes to backups synchronously before acking the client) gives you strong consistency but hurts write latency under load. A quorum-based approach where you write to 2 out of 3 replicas and ack immediately, then lazily sync the third, would be faster and still fault-tolerant.
+    </p>
+    <p>
+      Tablet splits are static. If all your users happen to have usernames starting with the letter a, one tablet is overloaded while the others sit idle. Dynamic tablet splitting based on load would be the production-grade solution.
+    </p>
+    <p>
+      Finally, frontend operations are not fully atomic. Uploading a file involves multiple KV operations: write the content, write the path mapping, update the file list index. If the server crashes between any of these steps, you can end up with orphaned data. Proper transactions across multiple KV rows would fix this cleanly.
+    </p>
+
+    <h2>Final thoughts</h2>
+    <p>
+      Building PennCloud was the most educational project I have done at Penn. Reading about distributed systems concepts like replication, fault tolerance, and crash recovery is one thing. Debugging why your recovery code loses two writes out of every thousand under a specific timing condition is another. The gap between understanding a concept and implementing it correctly is enormous, and closing that gap is what makes projects like this worthwhile.
+    </p>
+    <p>
+      If you want to go deeper on any of the topics covered here, particularly the recovery system or the KV store design, I am happy to write a follow-up. The recovery protocol especially has a lot of nuance that this post only scratches the surface of.
+    </p>
+
+  </div>
+
+</article>
+
+<footer>
+  <p>Sivangi Chatterjee &middot; 2026</p>
+</footer>
+
+</body>
+</html>

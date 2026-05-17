@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog · Sivangi Chatterjee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg-alt: #F3F1EE;
+  --text: #1A1A1A;
+  --text-muted: #6B6B6B;
+  --accent: #8B7355;
+  --accent-light: #C4A882;
+  --accent-hover: #6E5A42;
+  --border: #E0DCD6;
+  --card-bg: #FFFFFF;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Libre Franklin', 'Helvetica Neue', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent-light); color: var(--text); }
+
+/* ---- TOP BAR ---- */
+.blog-topbar {
+  padding: 0 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+  background: rgba(250, 250, 248, 0.92);
+}
+.blog-topbar-inner {
+  max-width: 860px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center; height: 60px;
+}
+
+.blog-topbar-name {
+  font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); text-decoration: none;
+  transition: color 0.2s;
+}
+.blog-topbar-name:hover { color: var(--accent-hover); }
+
+.blog-topbar-back {
+  font-family: var(--sans); font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.06em; color: var(--accent); text-decoration: none;
+  transition: color 0.2s;
+}
+.blog-topbar-back:hover { color: var(--accent-hover); }
+
+/* ---- MAIN CONTENT ---- */
+.blog-main {
+  max-width: 860px; margin: 0 auto;
+  padding: 80px 2rem 120px;
+}
+
+.blog-page-label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem;
+}
+
+.blog-heading {
+  font-family: var(--serif); font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 500; color: var(--text); line-height: 1.1;
+  margin-bottom: 1.4rem;
+}
+
+.blog-intro {
+  font-size: 0.95rem; color: var(--text-muted); line-height: 1.8;
+  margin-bottom: 3.5rem;
+  border-left: 3px solid var(--accent);
+  padding-left: 1.2rem;
+}
+
+/* ---- POST LIST ---- */
+.post-list { margin-top: 0; }
+
+.post-entry {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.post-entry:first-child { border-top: 1px solid var(--border); }
+
+.post-entry-title {
+  font-family: var(--serif); font-size: 1.4rem; font-weight: 600;
+  color: var(--accent); text-decoration: none; line-height: 1.25;
+  display: block; margin-bottom: 0.35rem;
+  transition: color 0.2s;
+}
+.post-entry-title:hover { color: var(--accent-hover); }
+
+.post-entry-meta {
+  font-size: 0.78rem; color: var(--text-muted);
+  letter-spacing: 0.03em; margin-bottom: 0.7rem;
+}
+
+.post-entry-tldr {
+  font-size: 0.9rem; color: var(--text); line-height: 1.75;
+}
+.post-entry-tldr strong { font-weight: 600; color: var(--text); }
+
+/* ---- EMPTY STATE ---- */
+.posts-empty {
+  text-align: center; color: var(--text-muted);
+  font-size: 0.88rem; letter-spacing: 0.04em;
+  padding: 3rem 0; font-style: italic; font-family: var(--serif);
+  font-size: 1.1rem;
+}
+
+/* ---- FOOTER ---- */
+footer {
+  text-align: center; padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.04em;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .blog-topbar { padding: 0 1.5rem; }
+  .blog-main { padding: 60px 1.5rem 80px; }
+}
+</style>
+</head>
+<body>
+
+<header class="blog-topbar">
+  <div class="blog-topbar-inner">
+    <a href="index.html" class="blog-topbar-name">Sivangi Chatterjee</a>
+    <a href="index.html" class="blog-topbar-back">&#8592; Back to Home</a>
+  </div>
+</header>
+
+<main class="blog-main">
+  <p class="blog-page-label">Writing</p>
+  <h1 class="blog-heading">Blog</h1>
+  <p class="blog-intro">
+    This space is for everyday learnings, in life and in work. Notes on books, research, films, and whatever else feels worth thinking about.
+  </p>
+
+  <div class="post-list">
+    <!-- Post entries will go here. Example structure:
+    <div class="post-entry">
+      <a href="blog/post-slug.html" class="post-entry-title">Post Title Here</a>
+      <p class="post-entry-meta">May 2026 &middot; 5 min read</p>
+      <p class="post-entry-tldr"><strong>TL;DR:</strong> A 2 to 3 sentence summary of what the post is about and why it is worth reading.</p>
+    </div>
+    -->
+    <p class="posts-empty">More posts coming soon...</p>
+  </div>
+</main>
+
+<footer>
+  <p>Sivangi Chatterjee &middot; 2026</p>
+</footer>
+
+</body>
+</html>
