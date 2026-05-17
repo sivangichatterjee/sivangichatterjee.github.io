@@ -110,9 +110,9 @@ nav .nav-links a:hover::after { width: 100%; }
 }
 
 .hero-photo {
-  width: 100%; aspect-ratio: 3/4;
+  width: 100%; aspect-ratio: 1/1;
   border: 1px solid var(--border); overflow: hidden;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem; border-radius: 6px;
 }
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -222,6 +222,17 @@ section:nth-child(even) { background: var(--bg-alt); }
 .project-card h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; margin-bottom: 0.3rem; }
 .project-type { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 0.8rem; }
 .project-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.75; }
+.project-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.3rem; }
+.project-card-header h3 { margin-bottom: 0; }
+.project-github { color: var(--accent); transition: color 0.2s; flex-shrink: 0; margin-top: 0.18rem; line-height: 1; }
+.project-github:hover { color: var(--accent-hover); }
+.project-link {
+  display: inline-block; margin-top: 0.75rem;
+  font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+  color: var(--accent); text-decoration: none; letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.project-link:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 .project-tech { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
 .project-tech span { font-size: 0.7rem; letter-spacing: 0.04em; padding: 0.3rem 0.7rem; background: var(--bg-alt); color: var(--text-muted); border: 1px solid var(--border); border-radius: 2px; }
 .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -317,7 +328,7 @@ footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border);
   <div class="hero-layout">
     <div class="hero-left">
       <div class="hero-photo">
-        <img src="IMG_1091.jpg" alt="Sivangi Chatterjee">
+         <img src="sivangi-portrait.jpg" alt="Sivangi Chatterjee">
       </div>
       <div class="hero-name">
         <p class="greeting">Hello, I am</p>
@@ -419,13 +430,37 @@ footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border);
         <p class="project-type">Distributed Systems</p>
         <p>
           Built a fault-tolerant distributed cloud platform in C++ featuring webmail and file storage
-          across 5 replicated backend servers. Implemented primary-based replication, write-ahead
-          logging, and checkpointing with two-path crash recovery ensuring zero data loss across node
-          failures. Includes a master coordinator for automatic primary election, a frontend load
-          balancer, and an admin console for live fault injection and recovery testing.
+          across 5 replicated backend servers, supporting file uploads of 800MB+. Implemented
+          primary-based replication across 10 tablets (each on 3 replicas), write-ahead logging, and
+          checkpointing with two-path crash recovery ensuring zero data loss across node failures.
+          Includes a master coordinator with automatic primary election within one 250ms heartbeat
+          cycle, a frontend load balancer, and an admin console for live fault injection and recovery
+          testing.
         </p>
+        <a href="blog/penncloud-post.html" class="project-link">Read the full write-up &#8594;</a>
         <div class="project-tech">
           <span>C++</span><span>Distributed Systems</span><span>Fault Tolerance</span><span>Key-Value Store</span><span>SMTP</span><span>HTTP</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-card-header">
+          <h3>Failure Mode Transfer in Distilled RAG Systems</h3>
+          <a href="https://github.com/sivangichatterjee/CIS6200_FinalProject" target="_blank" rel="noopener" class="project-github" aria-label="GitHub repository">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        </div>
+        <p class="project-type">Machine Learning Research</p>
+        <p>
+          Studied how knowledge distillation reshapes failure modes in Retrieval-Augmented Generation
+          systems. Built a controlled RAG pipeline on the SciFact biomedical benchmark, evaluated six
+          chunking strategies, and distilled a 1B-parameter student from a 70B teacher using LoRA
+          fine-tuning. Categorized failures using the Seven Failure Points taxonomy across 338
+          validation claims. While accuracy dropped 14.2 points, the student hallucinated roughly 30x
+          more often (0.3% &#8594; 8.9%) and amplified the teacher's label bias, demonstrating that
+          aggregate accuracy hides critical deployment risks in distilled RAG.
+        </p>
+        <div class="project-tech">
+          <span>Python</span><span>PyTorch</span><span>LoRA</span><span>Fine-tuning</span><span>Llama 3.3 70B</span><span>Llama 3.2 1B</span><span>FAISS</span><span>RAG</span>
         </div>
       </div>
       <div class="project-card">
