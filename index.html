@@ -211,6 +211,16 @@ section:nth-child(even) { background: var(--bg-alt); }
 .exp-header .exp-period { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
 .exp-role { font-size: 0.85rem; color: var(--accent); font-weight: 500; margin-bottom: 1rem; }
 .exp-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.75; }
+.exp-bullets { list-style: none; padding: 0; margin: 0.9rem 0 1rem 0; }
+.exp-bullets li {
+  font-size: 0.9rem; color: var(--text-muted); line-height: 1.75;
+  padding-left: 1.2rem; position: relative; margin-bottom: 0.75rem;
+}
+.exp-bullets li:last-child { margin-bottom: 0; }
+.exp-bullets li::before {
+  content: '·'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600; font-size: 1.1rem; line-height: 1.65;
+}
 
 /* ---- PROJECTS ---- */
 .project-card {
@@ -514,33 +524,34 @@ footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border);
     <div class="exp-card">
       <div class="exp-header">
         <h3>Lexmark | Xerox (India)</h3>
-        <span class="exp-period">Jul 2022 - Jul 2025</span>
       </div>
-      <p class="exp-role">Software Engineer, IT Applications &middot; Kolkata, India</p>
-      <p>
-        Over three years, I worked across the full breadth of Lexmark's enterprise technology
-        stack, building and modernizing business-critical systems. I designed a centralized
-        supply chain forecasting module on Azure and Dynamics 365 that automated inventory
-        planning and significantly reduced overhead. I also led a large-scale migration of
-        legacy customer support systems, replacing aging infrastructure with modern tooling
-        that measurably improved team productivity and customer satisfaction. Beyond that,
-        I built new product modules for managed print services and enterprise hardware,
-        expanding the platform's capabilities. All of this happened in a SAFe Agile environment
-        with tight collaboration across product management, QA, and engineering.
-      </p>
+      <p class="exp-role">Software Engineer &middot; Kolkata, India &middot; Jul 2022 - Jul 2025</p>
+      <p>Over three years at Lexmark | Xerox, I worked across the enterprise stack (Azure, .NET, Dynamics 365, Dataverse), building event-driven systems, distributed ingestion pipelines, and modernizing legacy infrastructure. Most of it happened in a SAFe Agile environment, in close collaboration with product, QA, and architecture.</p>
+      <ul class="exp-bullets">
+        <li>Architected an event-driven Azure Functions and Service Bus pipeline that automated supply chain forecasting in Dynamics 365, driving a $10M reduction in inventory overhead and restoring back-order levels to pre-COVID baselines.</li>
+        <li>Led the phased migration of customer support modules from Siebel to Dynamics 365 on .NET 8, coordinating staged cutovers across Dev, Test, UAT, and Production. Delivered a 50% productivity boost for agents and a 20% CSAT improvement.</li>
+        <li>Designed a two-stage Queue-Based Load Leveling pipeline (a named Microsoft Azure pattern) to ingest predictive-maintenance batches into Dynamics 365 within a 4-hour SLA, while keeping Dataverse below its HTTP 429 service-protection thresholds.</li>
+        <li>Built an automated exception-recovery Function App that resumed stalled Dynamics 365 orders across 12 exception types, replacing manual re-trigger work with idempotent pipeline replay. Recognized with a Manager Appreciation Award.</li>
+        <li>Accelerated bulk Dataverse writes by 4x on forecast updates by replacing sequential CRUD with parallel batched upserts via Parallel.ForEachAsync.</li>
+      </ul>
+      <div class="project-tech">
+        <span>Azure</span><span>JavaScript</span><span>.NET</span><span>C#</span><span>SQL</span><span>XML</span><span>Service Bus</span><span>Azure Functions</span><span>Dataverse</span><span>Dynamics 365</span>
+      </div>
     </div>
     <div class="exp-card">
       <div class="exp-header">
         <h3>Nomura Research Institute Financial Technologies</h3>
-        <span class="exp-period">Sep 2021 - May 2022</span>
       </div>
-      <p class="exp-role">Associate Software Engineer Intern &middot; Kolkata, India</p>
-      <p>
-        As an intern, I focused on improving configuration management for security brokerage
-        platforms using Java and Oracle. I streamlined deployment workflows to cut turnaround
-        time and built validation tools that improved data accuracy across the system, working
-        closely with clients to resolve discrepancies and prioritize the fixes that mattered most.
-      </p>
+      <p class="exp-role">Associate Software Engineer Intern &middot; Kolkata, India &middot; Sep 2021 - May 2022</p>
+      <p>As an intern on the financial technologies team, I worked on configuration management and tooling for security brokerage platforms, building Java applications alongside teams that supported live client systems. The role taught me how to ship safely against production constraints and communicate technical changes to non-engineering stakeholders.</p>
+      <ul class="exp-bullets">
+        <li>Built and maintained command-line batch jobs and web applications using Java, Spring, HTML, JavaScript, and Oracle databases, focused on configuration accuracy and deployment safety.</li>
+        <li>Authored technical documentation including process flow diagrams, use cases, and impact analysis documents to support handoffs and design reviews.</li>
+        <li>Collaborated with cross-functional teams to identify and resolve bugs and performance bottlenecks across production applications.</li>
+      </ul>
+      <div class="project-tech">
+        <span>Java</span><span>Spring</span><span>JavaScript</span><span>HTML</span><span>CSS</span><span>Oracle SQL</span>
+      </div>
     </div>
   </div>
 </section>
